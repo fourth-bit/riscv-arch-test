@@ -145,6 +145,27 @@ fedgesH  = {"pos0":                 0x0000, # 0
               "negNoncanonicalQNaN":  0xFFFF, # noncanonical quiet NaN
               "sNaN_payload1":        0x7D01} # signaling NaN with lsb set
 
+fedgesBF16 = {"pos0":                 0x0000, # 0
+              "neg0":                 0x8000, # -0
+              "pos1":                 0x3f80, # 1.0
+              "neg1":                 0xbf80, # -1.0
+              "posminnorm":           0x0080, # smallest positive normalized
+              "negmaxnorm":           0xff7f, # most negative
+              "posinfinity":          0x7f80, # positive infinity
+              "neginfinity":          0xff80, # negative infinity
+              "pos0p5":               0x3f00, # 0.5
+              "pos1p5":               0x3fc0, # 1.5
+              "neg2":                 0xC000, # 2.0
+              "pi":                   0x4049, # pi
+              "twoToEmax":            0x7f00, # 2^emax
+              "onePulp":              0x3f81, # 1 + ulp
+              "largestsubnorm":       0x007f, # largest positive subnorm
+              "negSubnormLeadingOne": 0x8040, # positive subnorm with leading 1
+              "min_subnorm":          0x0001, # smallest positive subnorm
+              "canonicalQNaN":        0x7fc0, # canonical quiet NaN
+              "negNoncanonicalQNaN":  0xffff, # noncanonical quiet NaN
+              "sNaN_payload1":        0x7f81} # signaling NaN with lsb set
+
 # fedgesQ = [] # TODO: Fill out quad precision F edges
 
 vectoredges = ["vs_corner_zero", "vs_corner_one", "vs_corner_two", "vs_corner_ones", "vs_corner_onesm1", "vs_corner_min", "vs_corner_minm1",
@@ -295,6 +316,7 @@ def getSigReg():
 def getFlen():
   global flen
   return flen
+
 
 def setXlen(new_xlen):
     global xlen, formatstr
@@ -508,12 +530,12 @@ vvfmtype     = ["vfadd.vf", "vfwadd.vf", "vfwadd.wf", "vfsub.vf", "vfwsub.vf", "
                 "vmfeq.vf", "vmfne.vf", "vmflt.vf", "vmfle.vf", "vmfgt.vf", "vmfge.vf",
                 "vfslide1up.vf", "vfslide1down.vf"]
 vvfvtype     = ["vfmerge.vfm"]
-vvvmr_f_type = ["vfmacc.vv", "vfnmacc.vv", "vfmsac.vv", "vfnmsac.vv", "vfmadd.vv", "vfnmadd.vv", "vfmsub.vv", "vfnmsub.vv", "vfwmacc.vv", "vfwnmacc.vv", "vfwmsac.vv", "vfwnmsac.vv"]
-vfvmtype     = ["vfmacc.vf", "vfnmacc.vf", "vfmsac.vf", "vfnmsac.vf", "vfmadd.vf", "vfnmadd.vf", "vfmsub.vf", "vfnmsub.vf", "vfwmacc.vf", "vfwnmacc.vf", "vfwmsac.vf", "vfwnmsac.vf"]
+vvvmr_f_type = ["vfmacc.vv", "vfnmacc.vv", "vfmsac.vv", "vfnmsac.vv", "vfmadd.vv", "vfnmadd.vv", "vfmsub.vv", "vfnmsub.vv", "vfwmacc.vv", "vfwnmacc.vv", "vfwmsac.vv", "vfwnmsac.vv", "vfwmaccbf16.vv"]
+vfvmtype     = ["vfmacc.vf", "vfnmacc.vf", "vfmsac.vf", "vfnmsac.vf", "vfmadd.vf", "vfnmadd.vf", "vfmsub.vf", "vfnmsub.vf", "vfwmacc.vf", "vfwnmacc.vf", "vfwmsac.vf", "vfwnmsac.vf", "vfwmaccbf16.vf"]
 vvm_f_type   = ["vfsqrt.v", "vfrsqrt7.v", "vfrec7.v",
                 "vfcvt.xu.f.v", "vfwcvt.xu.f.v", "vfncvt.xu.f.w", "vfcvt.x.f.v", "vfwcvt.x.f.v", "vfncvt.x.f.w", "vfcvt.rtz.xu.f.v", "vfwcvt.rtz.xu.f.v", "vfncvt.rtz.xu.f.w",
                 "vfcvt.rtz.x.f.v", "vfwcvt.rtz.x.f.v", "vfncvt.rtz.x.f.w", "vfcvt.f.xu.v", "vfwcvt.f.xu.v", "vfncvt.f.xu.w", "vfcvt.f.x.v", "vfwcvt.f.x.v", "vfncvt.f.x.w",
-                "vfwcvt.f.f.v", "vfncvt.f.f.w", "vfncvt.rod.f.f.w", "vfclass.v"]
+                "vfwcvt.f.f.v", "vfncvt.f.f.w", "vfncvt.rod.f.f.w", "vfclass.v", "vfwcvtbf16.f.f.v", "vfncvtbf16.f.f.w"]
 vftype       = ["vfmv.v.f", "vfmv.s.f"]
 fvtype       = ["vfmv.f.s"]
 
@@ -579,18 +601,18 @@ viins  = ["vadd.vi", "vrsub.vi", "vand.vi", "vor.vi", "vxor.vi", "vsll.vi", "vsr
 wvins = ["vnsrl.wv", "vnsra.wv", "vnclip.wv", "vnclipu.wv"]
 wxins = ["vnsrl.wx", "vnsra.wx", "vnclip.wx", "vnclipu.wx"]
 wiins = ["vnsrl.wi", "vnsra.wi", "vnclip.wi", "vnclipu.wi"]
-fcvt_w_ins = ["vfncvt.xu.f.w", "vfncvt.x.f.w", "vfncvt.rtz.xu.f.w", "vfncvt.rtz.x.f.w", "vfncvt.f.xu.w", "vfncvt.f.x.w", "vfncvt.f.f.w", "vfncvt.rod.f.f.w"]
+fcvt_w_ins = ["vfncvt.xu.f.w", "vfncvt.x.f.w", "vfncvt.rtz.xu.f.w", "vfncvt.rtz.x.f.w", "vfncvt.f.xu.w", "vfncvt.f.x.w", "vfncvt.f.f.w", "vfncvt.rod.f.f.w", "vfncvtbf16.f.f.w"]
 narrowins = wvins + wxins + wiins + fcvt_w_ins
 # widening
-fwvvins = ["vfwadd.vv", "vfwsub.vv", "vfwmul.vv", "vfwmacc.vv", "vfwnmacc.vv", "vfwmsac.vv", "vfwnmsac.vv"]
-fwvfins = ["vfwadd.vf", "vfwsub.vf", "vfwmul.vf", "vfwmacc.vf", "vfwnmacc.vf", "vfwmsac.vf", "vfwnmsac.vf"]
+fwvvins = ["vfwadd.vv", "vfwsub.vv", "vfwmul.vv", "vfwmacc.vv", "vfwnmacc.vv", "vfwmsac.vv", "vfwnmsac.vv", "vfwmaccbf16.vv"]
+fwvfins = ["vfwadd.vf", "vfwsub.vf", "vfwmul.vf", "vfwmacc.vf", "vfwnmacc.vf", "vfwmsac.vf", "vfwnmsac.vf", "vfwmaccbf16.vf"]
 fwwvins = ["vfwadd.wv", "vfwsub.wv"]
 fwwfins = ["vfwadd.wf", "vfwsub.wf"]
 wvvins  = ["vwadd.vv", "vwaddu.vv", "vwsub.vv", "vwsubu.vv", "vwmul.vv", "vwmulu.vv", "vwmulsu.vv", "vwmacc.vv", "vwmaccu.vv", "vwmaccsu.vv"] + fwvvins + bwvvins
 wvxins  = ["vwadd.vx", "vwaddu.vx", "vwsub.vx", "vwsubu.vx", "vwmul.vx", "vwmulu.vx", "vwmulsu.vx", "vwmacc.vx", "vwmaccu.vx", "vwmaccsu.vx", "vwmaccus.vx"]
 wwvins  = ["vwadd.wv", "vwaddu.wv", "vwsub.wv", "vwsubu.wv"] + fwwvins
 wwxins  = ["vwadd.wx", "vwaddu.wx", "vwsub.wx", "vwsubu.wx"]
-fwcvt_ins  = ["vfwcvt.xu.f.v", "vfwcvt.x.f.v", "vfwcvt.rtz.xu.f.v", "vfwcvt.rtz.x.f.v", "vfwcvt.f.xu.v", "vfwcvt.f.x.v", "vfwcvt.f.f.v"]
+fwcvt_ins  = ["vfwcvt.xu.f.v", "vfwcvt.x.f.v", "vfwcvt.rtz.xu.f.v", "vfwcvt.rtz.x.f.v", "vfwcvt.f.xu.v", "vfwcvt.f.x.v", "vfwcvt.f.f.v", "vfwcvtbf16.f.f.v"]
 vs2_widen_ins = narrowins + wwvins + wwxins + fwwfins
 # masking
 vvmins = ["vadc.vvm", "vsbc.vvm", "vmerge.vvm"]
@@ -654,6 +676,7 @@ widening_mac_ins = [
   "vwmacc.vx", "vwmaccu.vx", "vwmaccsu.vx", "vwmaccus.vx",
   "vfwmacc.vv", "vfwnmacc.vv", "vfwmsac.vv", "vfwnmsac.vv",
   "vfwmacc.vf", "vfwnmacc.vf", "vfwmsac.vf", "vfwnmsac.vf",
+  "vfwmaccbf16.vv", "vfwmaccbf16.vf",
 ]
 not_maskable    = vm_nomask_ins + mmins + vmvins + ls_not_maskable
 
@@ -706,6 +729,8 @@ strided_stores = [
     "vssseg7e8.v", "vssseg7e16.v", "vssseg7e32.v", "vssseg7e64.v",
     "vssseg8e8.v", "vssseg8e16.v", "vssseg8e32.v", "vssseg8e64.v"
 ]
+
+bf16_instructions = ["vfwmaccbf16.vv", "vfwmaccbf16.vf", "vfncvtbf16.f.f.w", "vfwcvtbf16.f.f.v"]
 
 
 # ─── Segment length 2 ──────────────────────────────────────────────
@@ -1283,6 +1308,8 @@ def genVsedgesFP(test, sew, emul):
   # so widening instructions (emul=2) use the correct precision edges.
   if eew == 64:
     vs_edges_f = fedgesD
+  elif eew == 16 and 'bf16' in test:
+    vs_edges_f = fedgesBF16
   elif eew == 16:
     vs_edges_f = fedgesH
   else:
@@ -1408,6 +1435,9 @@ def genVtestdata(test, sew):
         test_data += genVsedges(test, sew, test[-2:])
       elif (test in xvmtype) or (test in maskopins):
         test_data += genVsedges(test, sew, "eew1")
+      elif (test in widening_mac_ins):
+        test_data += genVsedgesFP(test, sew, "1")
+        test_data += genVsedgesFP(test, sew, "2")
       elif (test in vfloattypes):
         test_data += genVsedgesFP(test, sew, "1")
       else:
@@ -1469,7 +1499,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
 
     if test.startswith(("ExceptionsV", "SsstrictV", "MisalignedV")):
       ext_parts_no_I = ['M', 'V', 'Zicsr']
-      ext_str_no_I = "_M_V_Zicsr"
+      ext_str_no_I = "_M_V_Zicsr_Zifencei"
       # Vector-FP priv suites need scalar/vector FP extensions in -march so the
       # assembler accepts flh/flw/fld and the matching SEW vector-FP ops. Mirror
       # the unpriv vfloat path: F + Zfhmin (+ D when flen>32) for SEW>=16, plus
@@ -1500,8 +1530,8 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
 
       ext_parts = re.findall(r'Z[a-z]+|[A-Z]', extension)
 
-      ext_parts_no_I = []
-      ext_str_no_I = ""
+      ext_parts_no_I = ["zifencei"]
+      ext_str_no_I = "_zifenci"
       for ext in ext_parts:
         if ext == "I":
           continue
@@ -1509,7 +1539,8 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
         if ext == "V" and matched_alias is not None:
           ext_str_no_I += "_" + ext
           continue
-        if ext in ["Zvbb", "Zvbc", "Zvkb"]: # Bit Manipulation, Carryless Multiplication, and Crypto Bit Manipulation
+        # Bit Manipulation, Carryless Multiplication, and Crypto Bit Manipulation
+        if ext in ["Zvbb", "Zvbc", "Zvkb"]:
           # Assemblers require an explicit Zve base when only Zv* sub-extensions
           # are listed. Pick the smallest Zve that covers the active SEW/VDSEW.
           zve_extension = f"Zve{max(32, sew, vdsew)}x"
@@ -1562,7 +1593,9 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
                                      f"#define RVTEST_FP\n"
                                      f"#define RVTEST_SEW {sew}\n"
                                      f"#define VDSEW {vdsew}\n"
-                                     + (f"\n{getPrivExtraDefines()}" if priv else "")))
+                                     + (f"\n{getPrivExtraDefines()}" if priv else "")
+                                     + ("\n#define TRAP_SIGUPD_COUNT 50000" if test.startswith("SsstrictV") else "")))
+
 
     )
     # Strip trailing newlines so writeLine's own appended newline doesn't produce
@@ -2207,6 +2240,14 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
 
     if (priv):
       writeLine("nop",                                           "# nop after possible trap")
+      # The test instruction may have trapped or otherwise left mstatus.VS in a
+      # state where vector CSR access (csrw vstart) is itself illegal. Restore
+      # FS|VS = Dirty BEFORE touching any vector CSR so the cleanup epilog never
+      # itself traps (which doubles trap-signature pressure and can overflow the
+      # TRAP_SIGUPD_COUNT buffer in tests/env/rvtest_setup.h).
+      vstart_scratch = pickScalarScratch(list(scalar_registers_used) + [sigReg])
+      writeLine(f"li x{vstart_scratch}, {(3 << 13) | (3 << 9)}", "# FS|VS = Dirty mask")
+      writeLine(f"csrs mstatus, x{vstart_scratch}",              "# restore FS|VS = Dirty before vector CSR access")
       # vstart may still be non-zero after a trapping vector op (e.g. cp_vstart_gt_vl
       # leaves vstart > vl, which is reserved-behavior for the SIGUPD vse/vle that
       # follows). Clear it explicitly so the signature ops always run cleanly.
@@ -3387,7 +3428,7 @@ def readTestplans(priv=False):
                                     cps.append(key)
                         tp[instr] = cps
                 testplans[arch] = tp
-                if ("Vx" in arch and not arch.startswith("Exceptions") and not arch.startswith("Ssstric")):
+                if ("Vx" in arch and not arch.startswith("Exceptions") and not arch.startswith("Ssstrict")):
                     for effew in ["8", "16", "32", "64"]:
                         testplans["Vx" + effew] = tp
                     del testplans["Vx"]
